@@ -2,6 +2,8 @@
 import { LogOut, Plus } from 'lucide-react'
 import React, { useState } from 'react'
 import CourseForm from './CourseForm'
+import LecturerForm from './LecturerForm'
+import LogoutModal from './LogoutModal'
 
 const levels = [
     '100 Level Courses',
@@ -10,15 +12,14 @@ const levels = [
     '400 Level Courses',
     '500 Level Courses'
 ]
-interface Props{
-    toggle? : boolean
-}
-const Sidebar = ({toggle}: Props) => {
+
+const Sidebar = () => {
     const [isCourseFormToggled, setIsCourseFormToggled] = useState<boolean>(false)
+    const [isLecturerFormToggled, setIsLecturerFormToggled] = useState<boolean>(false)
+    const [isLogOutModalOpen, setIsLogOutModalOpen] = useState<boolean>(false)
   return (
     <>
-    {!toggle &&
-        <section className='fixed px-10 pt-10 w-[350px] md:block hidden '>
+        <section className='fixed px-10 pt-10 w-[350px] '>
             <div className='divide-y space-y-3 border bg-gray-100 px-3 py-2'>
                 <div>
                     <h2>Dashboard</h2>
@@ -39,7 +40,7 @@ const Sidebar = ({toggle}: Props) => {
                     <h3 className='font-bold'>Lectures</h3>
                     <div  className='flex gap-x-1 items-center'>
                         <Plus size={15}/>
-                        <span className='hover:underline cursor-pointer'>Add new Lecturer</span>
+                        <span className='hover:underline cursor-pointer' onClick={()=>setIsLecturerFormToggled(!isLecturerFormToggled)}>Add new Lecturer</span>
                     </div>
                 </div>
                 <div className='py-5 flex items-center gap-x-1'>
@@ -53,9 +54,14 @@ const Sidebar = ({toggle}: Props) => {
 
             </div>
         </section>
-    }
     {isCourseFormToggled && 
         <CourseForm toggle={()=>setIsCourseFormToggled(!isCourseFormToggled)}/>
+    }
+    {isLecturerFormToggled && 
+        <LecturerForm toggle={()=>setIsLecturerFormToggled(!isLecturerFormToggled)}/>
+    }
+    {isLogOutModalOpen && 
+        <LogoutModal toggle={()=>setIsLogOutModalOpen(!isLogOutModalOpen)}/>
     }
     </>
   )
