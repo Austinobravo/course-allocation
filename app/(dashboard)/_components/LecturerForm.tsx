@@ -26,8 +26,8 @@ const LecturerForm = ({toggle}:Props) => {
                 window.location.reload()
             })
             
-        } catch (error) {
-            toast.error(error.data.message || "An error occured")
+        } catch (error:any) {
+            toast.error(error.response.data.message || "An error occured")
         }finally{
             setIsSubmitting(false)
         }

@@ -27,8 +27,9 @@ const CourseForm = ({toggle}: Props) => {
                 window.location.reload()
             })
 
-        }catch(error){
-            toast.error(error.data.message || "An error occured")
+        }catch(error:any){
+            console.error("error",error)
+            toast.error(error.response.data.message || "An error occured")
 
         }finally{
             setIsSubmitting(false)

@@ -59,6 +59,9 @@ const Courses = () => {
                 </div>
 
             </div>
+            {allCourses.length <= 0 ? 
+                <p>No Courses created yet.</p>
+            :
             <div>
                 <table>
                     <thead>
@@ -89,6 +92,7 @@ const Courses = () => {
                     </tbody>
                 </table>
             </div>
+            }
 
         </div>
       
