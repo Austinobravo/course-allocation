@@ -17,6 +17,20 @@ const Sidebar = () => {
     const [isCourseFormToggled, setIsCourseFormToggled] = useState<boolean>(false)
     const [isLecturerFormToggled, setIsLecturerFormToggled] = useState<boolean>(false)
     const [isLogOutModalOpen, setIsLogOutModalOpen] = useState<boolean>(false)
+
+    React.useEffect(()=> {
+        const handleResize = () => {
+            if(window.innerWidth >= 756){
+                setIsCourseFormToggled(false)
+                setIsLecturerFormToggled(false)
+                setIsLogOutModalOpen(false)
+            }
+        }
+        window.addEventListener('resize', handleResize)
+        return ()=> {
+            window.removeEventListener('resize', handleResize)
+        }
+    }, [])
   return (
     <>
         <section className='fixed px-10 pt-10 w-[350px] '>
@@ -45,9 +59,8 @@ const Sidebar = () => {
                 </div>
                 <div className='py-5 flex items-center gap-x-1'>
                     <LogOut size={15}/>
-                    <button className='hover:underline'>
+                    <button className='hover:underline' onClick={()=>setIsLogOutModalOpen(!isLogOutModalOpen)}>
                         Logout
-
                     </button>
 
                 </div>
