@@ -9,7 +9,6 @@ interface Props {
 const CourseForm = ({toggle}: Props) => {
     const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false)
     const [allLevel, setAllLevel] = React.useState<any[]>([])
-    const [allLecturers, setAllLecturers] = React.useState<any[]>([])
 
     const submitCourseForm = async (event:React.FormEvent) => {
         event.preventDefault()
@@ -20,17 +19,16 @@ const CourseForm = ({toggle}: Props) => {
         const unit = +data.get('unit')!
         const levelId = +data.get('level')!
 
-        console.log(title, code, unit, levelId)
-        
         try{
             setIsSubmitting(true)
             await axios.post('/api/course', {title, code, unit, levelId})
             .then((response) => {
-                toast.success("Course created.")
+                toast.success(response.data.message || "Course created.")
+                window.location.reload()
             })
 
         }catch(error){
-            toast.error("An error occured")
+            toast.error(error.data.message || "An error occured")
 
         }finally{
             setIsSubmitting(false)
@@ -42,11 +40,6 @@ const CourseForm = ({toggle}: Props) => {
             const levelResponse = await getLevels()
             if (levelResponse) {
                 setAllLevel(levelResponse.data)
-            }
-            const lecturerResponse = await getCourses()
-            console.log('res', lecturerResponse)
-            if(lecturerResponse){
-                setAllLecturers(lecturerResponse.data)
             }
         }
         fetchData()
@@ -83,19 +76,8 @@ const CourseForm = ({toggle}: Props) => {
                         </select>
                     </div>
                 }
-                {allLecturers.length > 0 && 
-                    <div className='flex flex-col pt-2 '>
-                        <label className='font-bold'>Lecturer</label>
-                        <select className='border p-2 focus:border-blue-500 rounded-md outline-none' name='lecturer' required>
-                            <option>-- Select --</option>
-                            {allLecturers.map((lecturer, index) => (
-                                <option key={index} value={lecturer.id}>{`${lecturer.title} ${lecturer.firstName} ${lecturer.lastName}`}</option>
-                            ))}
-                        </select>
-                    </div>
-                }
                 <div className='pt-2'>
-                    <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' disabled={isSubmitting}>{isSubmitting ? 'Creating...' : 'Create new course'}</button>
+                    <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' disabled={isSubmitting}>{isSubmitting ? 'Creating course...' : 'Create new course'}</button>
                 </div>
             </form>
 
