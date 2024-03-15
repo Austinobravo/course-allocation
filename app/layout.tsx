@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
+import ToastProvider from "@/lib/ToastProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 const roboto = Roboto({subsets:['greek'], weight: ['100', '300', '400', '500', '700', '900']})
@@ -17,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={roboto.className}>{children}</body>
+      <body className={roboto.className}><ToastProvider/>{children}</body>
     </html>
   );
 }

@@ -48,8 +48,8 @@ model Lecturer{
   title String
   firstName String
   lastName String
-  lecturerId Int
-  course Course @relation(fields: [lecturerId], references: [id], onDelete: NoAction)
+  courseId Int
+  course Course @relation(fields: [courseId], references: [id], onDelete: NoAction)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

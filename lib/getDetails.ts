@@ -8,3 +8,7 @@ export async function getLecturers (){
     const response = await axios.get('/api/lecturer')
     return response
 }
+export async function getCourses (){
+    const response = await axios.get('/api/course')
+    return response
+}

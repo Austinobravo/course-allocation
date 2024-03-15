@@ -1,7 +1,8 @@
-import { getLecturers, getLevels } from '@/lib/getDetails'
+import { getCourses, getLecturers, getLevels } from '@/lib/getDetails'
 import axios from 'axios'
 import { X } from 'lucide-react'
 import React from 'react'
+import toast from 'react-hot-toast'
 interface Props {
     toggle: () => void
 }
@@ -13,17 +14,23 @@ const CourseForm = ({toggle}: Props) => {
     const submitCourseForm = async (event:React.FormEvent) => {
         event.preventDefault()
 
-        const data = new FormData()
+        const data = new FormData(event.currentTarget as any)
         const title = data.get('title')
         const code = data.get('code')
-        const unit = data.get('unit')
-        const level = data.get('level')
+        const unit = +data.get('unit')!
+        const levelId = +data.get('level')!
+
+        console.log(title, code, unit, levelId)
         
         try{
             setIsSubmitting(true)
-            axios.post('/api/course',)
+            await axios.post('/api/course', {title, code, unit, levelId})
+            .then((response) => {
+                toast.success("Course created.")
+            })
 
         }catch(error){
+            toast.error("An error occured")
 
         }finally{
             setIsSubmitting(false)
@@ -36,7 +43,8 @@ const CourseForm = ({toggle}: Props) => {
             if (levelResponse) {
                 setAllLevel(levelResponse.data)
             }
-            const lecturerResponse = await getLecturers()
+            const lecturerResponse = await getCourses()
+            console.log('res', lecturerResponse)
             if(lecturerResponse){
                 setAllLecturers(lecturerResponse.data)
             }
@@ -64,7 +72,7 @@ const CourseForm = ({toggle}: Props) => {
                     <label className='font-bold'>Course unit</label>
                     <input type='number' id='unit' name='unit' placeholder='What is the course unit?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
                 </div>
-                {allLevel.length &&
+                {allLevel.length > 0 &&
                     <div className='flex flex-col pt-2 '>
                         <label className='font-bold'>Level</label>
                         <select className='border p-2 focus:border-blue-500 rounded-md outline-none' name='level' required>
@@ -75,10 +83,10 @@ const CourseForm = ({toggle}: Props) => {
                         </select>
                     </div>
                 }
-                {allLecturers.length && 
+                {allLecturers.length > 0 && 
                     <div className='flex flex-col pt-2 '>
                         <label className='font-bold'>Lecturer</label>
-                        <select className='border p-2 focus:border-blue-500 rounded-md outline-none' required>
+                        <select className='border p-2 focus:border-blue-500 rounded-md outline-none' name='lecturer' required>
                             <option>-- Select --</option>
                             {allLecturers.map((lecturer, index) => (
                                 <option key={index} value={lecturer.id}>{`${lecturer.title} ${lecturer.firstName} ${lecturer.lastName}`}</option>

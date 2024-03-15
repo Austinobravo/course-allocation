@@ -6,6 +6,9 @@ export async function GET(req:NextRequest) {
         const levels = await prisma.levels.findMany({
             orderBy:{
                 createdAt: 'desc'
+            },
+            include:{
+                course:true
             }
         })
         return NextResponse.json(levels)
