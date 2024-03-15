@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import CourseForm from './CourseForm'
 import LecturerForm from './LecturerForm'
 import LogoutModal from './LogoutModal'
+import axios from 'axios'
+import { getLevels } from '@/lib/getDetails'
 
 const levels = [
     '100 Level Courses',
@@ -17,6 +19,19 @@ const Sidebar = () => {
     const [isCourseFormToggled, setIsCourseFormToggled] = useState<boolean>(false)
     const [isLecturerFormToggled, setIsLecturerFormToggled] = useState<boolean>(false)
     const [isLogOutModalOpen, setIsLogOutModalOpen] = useState<boolean>(false)
+    const [allLevel, setAllLevel] = useState<any[]>([])
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const response = await getLevels()
+            if (response) {
+                setAllLevel(response.data)
+            }
+
+        }
+        fetchData()
+        
+    },[])
 
     React.useEffect(()=> {
         const handleResize = () => {
@@ -45,9 +60,9 @@ const Sidebar = () => {
                         <span className='hover:underline cursor-pointer' onClick={()=> setIsCourseFormToggled(!isCourseFormToggled)}>Add new Course</span>
                     </div>
                 </div>
-                {levels.map((level, index) => (
+                {allLevel.map((level, index) => (
                     <div key={index}>
-                        {level}
+                        <p>{level.level} Level Courses</p>
                     </div>
                 ))}
                 <div className='space-y-2'>
