@@ -33,7 +33,7 @@ export const options:NextAuthOptions = {
 
                 const isCorrectPassword = await bcrypt.compare(credentials.password, user.password)
 
-                if (!isCorrectPassword) throw new Error("Wrong pasword")
+                if (!isCorrectPassword) throw new Error("Wrong password")
 
                 const {password, ...userWithoutPassword} = user
 
@@ -42,7 +42,8 @@ export const options:NextAuthOptions = {
         })
     ],
     pages:{
-        signIn: "/login"
+        signIn: "/login",
+        error: "/login"
     },
     secret: process.env.NEXTAUTH_SECRET,
     debug: process.env.NODE_ENV === 'development',
