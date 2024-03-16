@@ -1,5 +1,5 @@
 'use client'
-import { Menu } from 'lucide-react'
+import { Menu, Printer } from 'lucide-react'
 import React, { useState } from 'react'
 import Sidebar from './Sidebar'
 import { getCourses, getLevels } from '@/lib/getDetails'
@@ -93,6 +93,9 @@ const Courses = () => {
                         ))}
                     </tbody>
                 </table>
+                <div className=' ml-auto bg-red-500 rounded-lg text-white py-1 my-2 px-4 w-fit'>
+                    <button className='flex items-center' onClick={()=>window.print()}><Printer size={13} className='mr-1'/> <span>Print</span></button>
+                </div>
             </div>
             }
 
