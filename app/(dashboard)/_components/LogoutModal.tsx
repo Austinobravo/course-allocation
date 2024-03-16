@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { signOut } from 'next-auth/react'
 import React from 'react'
 interface Props{
     toggle: () => void
@@ -14,10 +15,10 @@ const LogoutModal = ({toggle}:Props) => {
                 <h3 className='text-center text-sm border-b font-bold'>Are you sure?</h3>
                 <div className='flex gap-x-5 items-center justify-center pt-2'>
                     <div className='pt-2'>
-                        <button type='submit' className='bg-blue-500 px-6 py-2 rounded-md text-white'>Cancel</button>
+                        <button type='submit' className='bg-blue-500 px-6 py-2 rounded-md text-white' onClick={toggle}>Cancel</button>
                     </div>
                     <div className='pt-2'>
-                        <button type='submit' className='bg-red-500 px-6 py-2 rounded-md text-white'>Log Out</button>
+                        <button type='submit' className='bg-red-500 px-6 py-2 rounded-md text-white' onClick={()=> signOut({redirect:false})}>Log Out</button>
                     </div>
                 </div>
             </form>

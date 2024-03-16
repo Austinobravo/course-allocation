@@ -1,17 +1,26 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient()
 async function main() {
-    const levels = await prisma.levels.createMany({
-        data:[
-            {level: '100'},
-            {level: '200'},
-            {level: '300'},
-            {level: '400'},
-            {level: '500'},
-        ]
+    const hashedPassword = await hash('password',12)
+    const newUser = await prisma.user.create({
+        data:{
+            username: "admin",
+            password: hashedPassword
+        }
     })
-    console.log("level", levels)
+    console.log("newUser", newUser)
+    // const levels = await prisma.levels.createMany({
+    //     data:[
+    //         {level: '100'},
+    //         {level: '200'},
+    //         {level: '300'},
+    //         {level: '400'},
+    //         {level: '500'},
+    //     ]
+    // })
+    // console.log("level", levels)
     
 }
 main()
