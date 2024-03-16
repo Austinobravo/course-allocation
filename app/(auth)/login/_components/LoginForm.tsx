@@ -29,7 +29,6 @@ const LoginForm = () => {
                 callbackUrl: callbackUrl
                 },  
             )
-            console.log('res', response)
             if(response?.error) return toast.error(response.error)
             if(response?.url){
                 toast.success("Login Successfull")
@@ -47,12 +46,12 @@ const LoginForm = () => {
                 <h3 className='text-center text-2xl font-bold'>Login In</h3>
                 <div className='flex flex-col pt-2 '>
                     <label className='font-bold'>Username</label>
-                    <input type='text' id='username' name='username' placeholder='Your username?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
+                    <input type='text' id='username' name='username' placeholder='Your username' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
                 </div>
                 <div className='flex flex-col pt-2 '>
                     <label className='font-bold'>Password</label>
                     <div className='flex relative '>
-                        <input type={isPasswordToggled ? 'text' : 'password'} id='password' name='password' placeholder='Your password?' className='p-2 focus:border-blue-500 rounded-md outline-none border w-full' required/>
+                        <input type={isPasswordToggled ? 'text' : 'password'} id='password' name='password' placeholder='Your password' className='p-2 focus:border-blue-500 rounded-md outline-none border w-full' required/>
                         <div className='right-3 absolute top-3 cursor-pointer' onClick={()=> setIsPasswordToggled(!isPasswordToggled)}>
                             {isPasswordToggled ?
                                 <EyeOff/>

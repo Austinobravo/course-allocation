@@ -46,6 +46,7 @@ const Sidebar = () => {
             window.removeEventListener('resize', handleResize)
         }
     }, [])
+    
   return (
     <>
         <section className='fixed px-10 pt-10 w-[350px] '>
