@@ -1,5 +1,5 @@
 'use client'
-import { LogOut, Plus } from 'lucide-react'
+import { Loader2, LogOut, Plus } from 'lucide-react'
 import React, { useState } from 'react'
 import CourseForm from './CourseForm'
 import LecturerForm from './LecturerForm'
@@ -20,13 +20,16 @@ const Sidebar = () => {
     const [isLecturerFormToggled, setIsLecturerFormToggled] = useState<boolean>(false)
     const [isLogOutModalOpen, setIsLogOutModalOpen] = useState<boolean>(false)
     const [allLevel, setAllLevel] = useState<any[]>([])
+    const [isLoading, setIsLoading] = React.useState<boolean>(false)
 
     React.useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true)
             const response = await getLevels()
             if (response) {
                 setAllLevel(response.data)
             }
+            setIsLoading(false)
 
         }
         fetchData()
@@ -50,6 +53,11 @@ const Sidebar = () => {
   return (
     <>
         <section className='fixed px-10 pt-10 w-[350px] '>
+        {isLoading ?
+                <div className='flex justify-center items-center'>
+                    <Loader2 size={80} className='animate-spin'/>
+                </div>
+            :
             <div className='divide-y space-y-3 border bg-gray-100 px-3 py-2'>
                 <div>
                     <h2>Dashboard</h2>
@@ -82,6 +90,7 @@ const Sidebar = () => {
                 </div>
 
             </div>
+        }
         </section>
     {isCourseFormToggled && 
         <CourseForm toggle={()=>setIsCourseFormToggled(!isCourseFormToggled)}/>
