@@ -4,13 +4,13 @@ import React, { useState } from 'react'
 import Sidebar from './Sidebar'
 import { getCourses, getLevels } from '@/lib/getDetails'
 import AllocatedForm from './AllocatedForm'
-
+import { useSession } from 'next-auth/react'
 const Courses = () => {
     const [isSidebarToggled, setIsSidebarToggled] = useState<boolean>(true)
     const [isAllocatedFormToggled, setIsAllocatedFormToggled] = useState<boolean>(false)
     const [allCourses, setAllCourses] = React.useState<any[]>([])
     const [allLevels, setAllLevels] = React.useState<any[]>([])
-
+    const {data:session} = useSession()
     const getApproriateLevel:any = (id:number)=> {
         const gottenLevel = allLevels.filter((eachLevel) => eachLevel.id === id)
         return gottenLevel[0]?.level
@@ -18,6 +18,7 @@ const Courses = () => {
     
     React.useEffect(() => {
         const fetchData = async () => {
+            console.log("session", session)
             const courseResponse = await getCourses()
             console.log('res', courseResponse)
             if(courseResponse){
