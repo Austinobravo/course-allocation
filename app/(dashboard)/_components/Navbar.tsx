@@ -1,8 +1,11 @@
 import Image from 'next/image'
 import React from 'react'
 import MobileNav from './MobileNav'
+import { getCurrentUser } from '@/lib/sessionServer'
+import { User } from 'lucide-react'
 
-const Navbar = () => {
+const Navbar = async () => {
+    const user = await getCurrentUser()
   return (
     <section className='w-full bg-green-700 py-2 px-10 font-bold flex justify-between gap-x-10 md:text-base text-sm items-center text-white'>
         <div>
@@ -17,7 +20,7 @@ const Navbar = () => {
             </div>
             <div className='flex flex-col items-center'>
                 <h2>Welcome</h2>
-                <span>Admin</span>
+                <span className='text-black flex items-center hover:underline'><span className='rounded-full bg-blue-500 text-white p-1 mr-1'><User  size={10}/></span>{user?.username}</span>
             </div>
 
         </div>
