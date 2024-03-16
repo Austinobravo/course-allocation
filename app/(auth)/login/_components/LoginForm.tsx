@@ -32,7 +32,7 @@ const LoginForm = () => {
             if(response?.error) return toast.error(response.error)
             if(response?.url){
                 toast.success("Login Successfull")
-                router.push(response.url)
+                router.push('/')
             } 
         }catch(error){
             console.error(error)
