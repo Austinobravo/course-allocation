@@ -46,3 +46,42 @@ export async function POST(req:Request) {
     }
     
 }
+
+export async function PATCH(req:Request){
+    const data = await req.json()
+
+    const {courseId, lecturerId} = data
+
+    const findIfTheLecturerExistsOnTheCourse = await prisma.lecturer.findFirst({
+        where:{
+            id: lecturerId,
+            course: {
+                some:{
+                    id: courseId
+                }
+            }
+        }
+    })
+
+    if(findIfTheLecturerExistsOnTheCourse) return NextResponse.json({message: "This lecturer already teaches this course"}, {status:400})
+
+    try{
+        const addLecturerToCourse =  await prisma.lecturer.update({
+            where:{
+                id: lecturerId
+            },
+            data:{
+                course: {
+                    connect:{
+                        id: courseId
+                    }
+                }
+            }
+            
+        })
+        console.log('course', JSON.stringify(addLecturerToCourse))
+        return  NextResponse.json({message: "Updated succesfully"}, {status:200})
+    }catch(error){
+        return NextResponse.json({message: error}, {status: 500})
+    }
+}

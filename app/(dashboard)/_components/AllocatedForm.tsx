@@ -1,7 +1,9 @@
-import { getLecturers, getLevels } from '@/lib/getDetails'
+import { getCourses, getLecturers, getLevels } from '@/lib/getDetails'
+import axios from 'axios'
 import { X } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
+import toast from 'react-hot-toast'
 
 
 interface Props{
@@ -15,20 +17,26 @@ const AllocatedForm = ({toggle}:Props) => {
     const [lecturerId, setLecturerId] = React.useState<number>(0)
     const [allCourses, setAllCourses] = React.useState<any[]>([])
     const [allLecturers, setAllLecturers] = React.useState<any[]>([])
+    const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false)
 
     const formSteps = 3
 
-    const submitForm = (event:React.FormEvent) => {
+    const submitForm = async (event:React.FormEvent) => {
         event.preventDefault()
         if(currentStep === 3){
             try{
-                alert(levelId)
-                alert(courseId)
-                alert(lecturerId)
-                alert('done')
+                setIsSubmitting(true)
+                await axios.patch('/api/course', {courseId, lecturerId})
+                .then((response) => {
+                    toast.success(`${response.data.message}`)
+                    window.location.reload()
+            })
+                
+            }catch(error:any){
+                toast.error(error.response.data.message || "An error occured.")
 
-            }catch(error){
-
+            }finally{
+                setIsSubmitting(false)
             }
         } else{
             setCurrentStep(currentStep + 1)
@@ -123,7 +131,7 @@ const AllocatedForm = ({toggle}:Props) => {
                         ))}
                     </div>
                     <div className='pt-2 flex items-center justify-between'>
-                        <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' >Choose</button>
+                        <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' >{isSubmitting ? 'Allocating course..' : 'Allocate course'}</button>
                         <div className='font-bold'>
                             <span className='text-2xl'>{currentStep}</span>/
                             <span >{formSteps}</span>

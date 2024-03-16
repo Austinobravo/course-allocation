@@ -7,7 +7,7 @@ import AllocatedForm from './AllocatedForm'
 
 const Courses = () => {
     const [isSidebarToggled, setIsSidebarToggled] = useState<boolean>(true)
-    const [isAllocatedFormToggled, setIsAllocatedFormToggled] = useState<boolean>(true)
+    const [isAllocatedFormToggled, setIsAllocatedFormToggled] = useState<boolean>(false)
     const [allCourses, setAllCourses] = React.useState<any[]>([])
     const [allLevels, setAllLevels] = React.useState<any[]>([])
 

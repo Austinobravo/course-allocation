@@ -6,6 +6,9 @@ export async function GET(req:NextRequest) {
         const lecturers = await prisma.lecturer.findMany({
             orderBy:{
                 createdAt: 'desc'
+            },
+            include:{
+                course:true
             }
         })
         return NextResponse.json(lecturers)
