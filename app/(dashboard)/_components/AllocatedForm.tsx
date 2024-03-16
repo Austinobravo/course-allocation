@@ -1,5 +1,6 @@
-import { getCourses, getLecturers, getLevels } from '@/lib/getDetails'
+import { getLecturers, getLevels } from '@/lib/getDetails'
 import { X } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
 
@@ -35,16 +36,16 @@ const AllocatedForm = ({toggle}:Props) => {
        
     }
 
+    const getLevelCourses = (id:number) => {
+        const gottenLevelCourses = allLevels.filter((eachLevel)=> eachLevel.id === id)
+        setAllCourses(gottenLevelCourses[0]?.course)
+    }
+
     React.useEffect(()=>{
         const fetchData = async () => {
             const levelResponse = await getLevels()
             if (levelResponse) {
                 setAllLevels(levelResponse.data)
-            }
-
-            const courseResponse = await getCourses()
-            if(courseResponse){
-                setAllCourses(courseResponse.data)
             }
 
             const lecturerResponse = await getLecturers()
@@ -62,7 +63,7 @@ const AllocatedForm = ({toggle}:Props) => {
             </div>
             <h3 className='text-center text-2xl border-b font-bold'>Allocate Course </h3>
             {currentStep === 1 && 
-                <form className='md:w-[500px] w-full px-2' onSubmit={submitForm} >
+                <form className='md:w-[500px] w-full px-2' onSubmit={(e)=>{submitForm(e),getLevelCourses(levelId)}} >
                     <div className='flex flex-col pt-2 '>
                         <label className='font-bold'>Which level are you allocating to?</label>
                         {allLevels.length > 0 && allLevels.map((level, index) => (
@@ -83,14 +84,16 @@ const AllocatedForm = ({toggle}:Props) => {
                 </form>
             }
             {currentStep === 2 && 
-                <form className='md:w-[500px] w-full px-2'  onSubmit={submitForm}>
+                <form className='md:w-[500px] w-full px-2' onSubmit={submitForm}>
+                    {allCourses.length > 0 ?
+                    <>
                     <div className='flex flex-col pt-2 '>
                         <label className='font-bold'>Which course are you allocating?</label>
-                        {allCourses.length > 0 && allCourses.map((course, index) => (
+                         {allCourses.map((course, index) => (
                             <div key={index} className='space-x-1'>
                                 <span className='pr-2'>{index + 1}.</span> 
                                 <input type='radio' id='course' name='course' value={course.id} onChange={()=> setCourseId(course.id)} placeholder='Which course?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/> 
-                                <label htmlFor='course'>{course.title}</label>
+                                <label htmlFor='course'>{course.title} <span className='text-xs'>{course.code}</span></label>
                             </div>
                         ))}
                     </div>
@@ -101,6 +104,10 @@ const AllocatedForm = ({toggle}:Props) => {
                             <span >{formSteps}</span>
                         </div>
                     </div>
+                    </>
+                        :
+                    <p className='text-red-500 font-bold text-center text-xs'>No course gotten for this level. Please go back to the dashboard and register a course for this level <Link href={`/`} className='text-blue-500'>now</Link></p>
+                    }
                 </form>
             }
             {currentStep === 3 && 
