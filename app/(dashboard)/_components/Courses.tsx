@@ -54,7 +54,7 @@ const Courses = () => {
         }
         <div className={`${isSidebarToggled ? 'md:pl-80' : ' w-full'}   pt-5 md:px-10 px-2 space-y-2 `}>
             <div className='flex justify-between items-center'>
-                <div className={`${allCourses.length <= 0 && 'bg-blue-100'} bg-blue-500 rounded-lg text-white py-2 px-4 w-fit`}>
+                <div className={`${allCourses.length <= 0 && '!bg-blue-300 cursor-not-allowed'} bg-blue-500 rounded-lg text-white py-2 px-4 w-fit`}>
                     <button className={``} disabled={allCourses.length <= 0} onClick={()=>setIsAllocatedFormToggled(!isAllocatedFormToggled)}>Allocate Courses</button>
                 </div>
                 <div className='cursor-pointer hidden md:block' onClick={()=>{setIsSidebarToggled(!isSidebarToggled)}}>
