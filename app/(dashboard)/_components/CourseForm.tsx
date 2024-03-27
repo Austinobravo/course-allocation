@@ -49,7 +49,7 @@ const CourseForm = ({toggle}: Props) => {
   return (
     <section className='bg-black/50 fixed top-0 left-0 w-full h-full flex justify-center ' >
         <div className='bg-white w-full md:w-[500px]'>
-            <div className="p-3 cursor-pointer" onClick={toggle}>
+            <div className="p-3 cursor-pointer" onClick={toggle} title='Close'>
                 <X size={30} className="ml-auto " />
             </div>
             <form className='md:w-[500px] w-full px-2' onSubmit={submitCourseForm}>
