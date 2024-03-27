@@ -114,7 +114,7 @@ const AllocatedForm = ({toggle}:Props) => {
                     </div>
                     </>
                         :
-                    <p className='text-red-500 font-bold text-center text-xs'>No course gotten for this level. Please go back to the dashboard and register a course for this level <Link href={`/`} className='text-blue-500'>now</Link></p>
+                    <p className='text-red-500 font-bold text-center text-xs'>No course gotten for this level. Please go back to the dashboard and register a course for this level <button onClick={()=>setCurrentStep(currentStep - 1)} className='text-blue-500'>now</button></p>
                     }
                 </form>
             }
@@ -122,13 +122,16 @@ const AllocatedForm = ({toggle}:Props) => {
                 <form className='md:w-[500px] w-full px-2'  onSubmit={submitForm}>
                     <div className='flex flex-col pt-2 '>
                         <label className='font-bold'>Which Lecturer are you allocating to?</label>
-                        {allLecturers.length > 0 && allLecturers.map((lecturer, index) => (
+                        {allLecturers.length > 0 ? allLecturers.map((lecturer, index) => (
                             <div key={index} className='space-x-1'>
                                 <span className='pr-2'>{index + 1}.</span> 
                                 <input type='radio' id='lecturer' name='lecturer' value={lecturer.id} onChange={()=>setLecturerId(lecturer.id)} placeholder='Which lecturer?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/> 
                                 <label htmlFor='lecturer'>{lecturer.title} {lecturer.firstName} {lecturer.lastName}</label>
                             </div>
-                        ))}
+                        ))
+                        :
+                        <p className='text-red-500 font-bold text-center text-xs'>No Lecturers added yet. Please go back to the dashboard and add a lecturer <button onClick={toggle} className='text-blue-500'>now</button></p>
+                        }
                     </div>
                     <div className='pt-2 flex items-center justify-between'>
                         <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' >{isSubmitting ? 'Allocating course..' : 'Allocate course'}</button>
