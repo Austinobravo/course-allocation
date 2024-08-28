@@ -1,0 +1,519 @@
+Project - A Course aloocation project
+
+
+This web app is currently hosted on  [here](https://course-allocation-project.onrender.com/) 
+
+Technologies Used
+
+
+ - NextJs - A Javascript Framework that helps in building responsive web applications.
+ - Tailwind CSS - A Cascading Stylesheet Framework that helps in beautifying and making web applications responseive.
+ - Typescript - A Programming Language used on the project.
+ - Sqlite - A relational Database 
+ - Prisma - An Object relational Mapping used to create database schemas.
+
+ This Project Comprises - (Code will be provided below):
+  - A Login System
+  - A Course Registration Form
+  - A Lecturer Registration Form
+  - An Allocation System
+  - A table to display details.
+
+  The Code:
+   The Login System:
+    const LoginForm = () => {
+    const [isPasswordToggled, setIsPasswordToggled] = React.useState(false)
+    const [isSubmitting, setIsSubmitting] = React.useState(false)
+    const searchParams = useSearchParams()
+    const callbackUrl = searchParams.get('callbackUrl') || '/'
+    const router = useRouter()
+    const submitLoginForm = async (event: React.FormEvent) => {
+        event.preventDefault()
+
+        const data = new FormData(event?.currentTarget as any)
+        const username = data.get('username')
+        const password = data.get('password')
+
+        try{
+            setIsSubmitting(true)
+            const response = await signIn(
+                'credentials',
+                {
+                redirect:false,
+                username: username,
+                password: password,
+                callbackUrl: callbackUrl
+                },  
+            )
+            if(response?.error) return toast.error(response.error)
+            if(response?.url){
+                toast.success("Login Successful")
+                router.push('/')
+            } 
+        }catch(error){
+            console.error(error)
+        }finally{
+            setIsSubmitting(false)
+        }
+    }
+  return (
+   
+        <form className='md:w-[500px] sm:w-[600px]  w-full px-5  py-4 pb-5 mt-2 rounded-lg ' onSubmit={submitLoginForm} >
+                <h3 className='text-center text-2xl font-bold'>Login In</h3>
+                <div className='flex flex-col pt-2 '>
+                    <label className='font-bold'>Username</label>
+                    <input type='text' id='username' name='username' placeholder='Your username' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
+                </div>
+                <div className='flex flex-col pt-2 '>
+                    <label className='font-bold'>Password</label>
+                    <div className='flex relative '>
+                        <input type={isPasswordToggled ? 'text' : 'password'} id='password' name='password' placeholder='Your password' className='p-2 focus:border-blue-500 rounded-md outline-none border w-full' required/>
+                        <div className='right-3 absolute top-3 cursor-pointer' onClick={()=> setIsPasswordToggled(!isPasswordToggled)}>
+                            {isPasswordToggled ?
+                                <EyeOff/>
+                            :
+                                <Eye/>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+                <div className='pt-2'>
+                    <button type='submit' className='bg-blue-500 mx-auto flex justify-center items-center disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md w-full font-bold text-white' disabled={isSubmitting}>{isSubmitting ? <Loader2 className='animate-spin' size={20}/> : 'Login'}</button>
+                </div>
+        </form>
+      
+   
+  )
+}
+
+The Course Registration Form:
+const CourseForm = ({toggle}: Props) => {
+    const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false)
+    const [allLevel, setAllLevel] = React.useState<any[]>([])
+
+    const submitCourseForm = async (event:React.FormEvent) => {
+        event.preventDefault()
+
+        const data = new FormData(event.currentTarget as any)
+        const title = data.get('title')
+        const code = data.get('code')
+        const unit = +data.get('unit')!
+        const levelId = +data.get('level')!
+
+        try{
+            setIsSubmitting(true)
+            await axios.post('/api/course', {title, code, unit, levelId})
+            .then((response) => {
+                toast.success(response.data.message || "Course created.")
+                window.location.reload()
+            })
+
+        }catch(error:any){
+            console.error("error",error)
+            toast.error(error.response.data.message || "An error occured")
+
+        }finally{
+            setIsSubmitting(false)
+        }
+    }
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const levelResponse = await getLevels()
+            if (levelResponse) {
+                setAllLevel(levelResponse.data)
+            }
+        }
+        fetchData()
+    }, [])
+
+  return (
+    <section className='bg-black/50 fixed top-0 left-0 w-full h-full flex justify-center ' >
+        <div className='bg-white w-full md:w-[500px]'>
+            <div className="p-3 cursor-pointer" onClick={toggle} title='Close'>
+                <X size={30} className="ml-auto " />
+            </div>
+            <form className='md:w-[500px] w-full px-2' onSubmit={submitCourseForm}>
+                <h3 className='text-center text-2xl border-b font-bold'>Add New Course</h3>
+                <div className='flex flex-col pt-2 '>
+                    <label className='font-bold'>Course Title</label>
+                    <input type='text' id='title' name='title' placeholder='What is the course title?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
+                </div>
+                <div className='flex flex-col pt-2 '>
+                    <label className='font-bold'>Course code</label>
+                    <input type='text' id='code' name='code' placeholder='What is the course code?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
+                </div>
+                <div className='flex flex-col pt-2 '>
+                    <label className='font-bold'>Course unit</label>
+                    <input type='number' id='unit' name='unit' placeholder='What is the course unit?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
+                </div>
+                {allLevel.length > 0 &&
+                    <div className='flex flex-col pt-2 '>
+                        <label className='font-bold'>Level</label>
+                        <select className='border p-2 focus:border-blue-500 rounded-md outline-none' name='level' required>
+                            <option>-- Select --</option>
+                            {allLevel.map((level, index) => (
+                                <option key={index} value={level.id}>{level.level}</option>
+                            ))}
+                        </select>
+                    </div>
+                }
+                <div className='pt-2'>
+                    <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' disabled={isSubmitting}>{isSubmitting ? 'Creating course...' : 'Create new course'}</button>
+                </div>
+            </form>
+
+        </div>
+      
+    </section>
+  )
+}
+
+The Lecturer Registration Form:
+const LecturerForm = ({toggle}:Props) => {
+    const [allCourses, setAllCourses] = React.useState<any[]>([])
+    const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false)
+
+    const submitLecturerForm = async (event:React.FormEvent) => {
+        event.preventDefault()
+
+        const data = new FormData(event.currentTarget as any)
+        const title = data.get('title')
+        const firstName = data.get('firstName')
+        const lastName = data.get('lastName')
+        const courseId = +data.get('course')!
+        try {
+            setIsSubmitting(true)
+            await axios.post('/api/lecturer', {title, firstName,lastName,courseId})
+            .then((response) => {
+                toast.success(response.data.message || "Lecturer created.")
+                window.location.reload()
+            })
+            
+        } catch (error:any) {
+            toast.error(error.response.data.message || "An error occured")
+        }finally{
+            setIsSubmitting(false)
+        }
+    }
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const courseResponse = await getCourses()
+            if(courseResponse){
+                setAllCourses(courseResponse.data)
+            }
+        }
+        fetchData()
+    }, [])
+  return (
+    <section className='bg-black/50 fixed top-0 left-0 w-full h-full flex justify-center ' >
+        <div className='bg-white w-full md:w-[500px]'>
+            <div className="p-3 cursor-pointer" onClick={toggle}>
+                <X size={30} className="ml-auto " />
+            </div>
+            <form className='md:w-[500px] w-full px-2' onSubmit={submitLecturerForm}>
+                <h3 className='text-center text-2xl border-b font-bold'>Add New Lecturer</h3>
+                <div className='flex flex-col pt-2 '>
+                    <label className='font-bold'>Title</label>
+                    <select className='border p-2 focus:border-blue-500 rounded-md outline-none' name='title' required>
+                        <option>-- Select --</option>
+                        <option>Mr</option>
+                        <option>Mrs</option>
+                        <option>Ms</option>
+                        <option>Dr</option>
+                        <option>Prof</option>
+                    </select>
+                </div>
+                <div className='flex flex-col pt-2 '>
+                    <label className='font-bold'>First Name</label>
+                    <input type='text' id='firstName' name='firstName' placeholder="What is the Lecturer's first name?" className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
+                </div>
+                <div className='flex flex-col pt-2 '>
+                    <label className='font-bold'>Last Name</label>
+                    <input type='text' id='lastName' name='lastName' placeholder="What is the Lecturer's  last name?" className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
+                </div>
+                {/* {allCourses.length > 0 &&
+                    <div className='flex flex-col pt-2 '>
+                        <label className='font-bold'>Courses Of Specialization</label>
+                        <select className='border p-2 focus:border-blue-500 rounded-md outline-none' name='course' required>
+                            <option>-- Select --</option>
+                            {allCourses.map((course, index) => (
+                                <option key={index} value={course.id}>{course.title}</option>
+                            ))}
+                        </select>
+                    </div>
+                } */}
+                <div className='pt-2'>
+                    <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' disabled={isSubmitting}>{isSubmitting ? 'Creating lecturer...' : 'Create new lecturer'}</button>
+                </div>
+            </form>
+
+        </div>
+  
+    </section>
+  )
+}
+
+The Allocation System:
+const AllocatedForm = ({toggle}:Props) => {
+    const [allLevels, setAllLevels] = React.useState<any[]>([])
+    const [currentStep, setCurrentStep] = React.useState<number>(1)
+    const [courseId, setCourseId] = React.useState<number>(0)
+    const [levelId, setLevelId] = React.useState<number>(0)
+    const [lecturerId, setLecturerId] = React.useState<number>(0)
+    const [allCourses, setAllCourses] = React.useState<any[]>([])
+    const [allLecturers, setAllLecturers] = React.useState<any[]>([])
+    const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false)
+
+    const formSteps = 3
+
+    const submitForm = async (event:React.FormEvent) => {
+        event.preventDefault()
+        if(currentStep === 3){
+            try{
+                setIsSubmitting(true)
+                await axios.patch('/api/course', {courseId, lecturerId})
+                .then((response) => {
+                    toast.success(`${response.data.message}`)
+                    window.location.reload()
+            })
+                
+            }catch(error:any){
+                toast.error(error.response.data.message || "An error occured.")
+
+            }finally{
+                setIsSubmitting(false)
+            }
+        } else{
+            setCurrentStep(currentStep + 1)
+        }
+       
+    }
+
+    const getLevelCourses = (id:number) => {
+        const gottenLevelCourses = allLevels.filter((eachLevel)=> eachLevel.id === id)
+        setAllCourses(gottenLevelCourses[0]?.course)
+    }
+
+    React.useEffect(()=>{
+        const fetchData = async () => {
+            const levelResponse = await getLevels()
+            if (levelResponse) {
+                setAllLevels(levelResponse.data)
+            }
+
+            const lecturerResponse = await getLecturers()
+            if(lecturerResponse){
+                setAllLecturers(lecturerResponse.data)
+            }
+        }
+        fetchData()
+    },[])
+  return (
+    <section className='bg-black/50 top-0 left-0 w-full h-full fixed z-20 flex justify-center'>
+      <div className='bg-white w-full md:w-[500px]'>
+            <div className="p-3 cursor-pointer" onClick={toggle}>
+                <X size={30} className="ml-auto " />
+            </div>
+            <h3 className='text-center text-2xl border-b font-bold'>Allocate Course </h3>
+            {currentStep === 1 && 
+                <form className='md:w-[500px] w-full px-2' onSubmit={(e)=>{submitForm(e),getLevelCourses(levelId)}} >
+                    <div className='flex flex-col pt-2 '>
+                        <label className='font-bold'>Which level are you allocating to?</label>
+                        {allLevels.length > 0 && allLevels.map((level, index) => (
+                            <div key={index} className='space-x-1'>
+                                <span className='pr-2'>{index + 1}.</span> 
+                                <input type='radio' id='level' name='level' value={level.id} onChange={()=>setLevelId(level.id)} placeholder='Which level?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/> 
+                                <label htmlFor='level'>{level.level}</label>
+                            </div>
+                        ))}
+                    </div>
+                    <div className='pt-2 flex items-center justify-between'>
+                        <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white'>Choose</button>
+                        <div className='font-bold'>
+                            <span className='text-2xl'>{currentStep}</span>/
+                            <span >{formSteps}</span>
+                        </div>
+                    </div>
+                </form>
+            }
+            {currentStep === 2 && 
+                <form className='md:w-[500px] w-full px-2' onSubmit={submitForm}>
+                    {allCourses.length > 0 ?
+                    <>
+                    <div className='flex flex-col pt-2 '>
+                        <label className='font-bold'>Which course are you allocating?</label>
+                         {allCourses.map((course, index) => (
+                            <div key={index} className='space-x-1'>
+                                <span className='pr-2'>{index + 1}.</span> 
+                                <input type='radio' id='course' name='course' value={course.id} onChange={()=> setCourseId(course.id)} placeholder='Which course?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/> 
+                                <label htmlFor='course'>{course.title} <span className='text-xs'>{course.code}</span></label>
+                            </div>
+                        ))}
+                    </div>
+                    <div className='pt-2 flex items-center justify-between'>
+                        <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' >Choose</button>
+                        <div className='font-bold'>
+                            <span className='text-2xl'>{currentStep}</span>/
+                            <span >{formSteps}</span>
+                        </div>
+                    </div>
+                    </>
+                        :
+                    <p className='text-red-500 font-bold text-center text-xs'>No course gotten for this level. Please go back to the dashboard and register a course for this level <button onClick={()=>setCurrentStep(currentStep - 1)} className='text-blue-500'>now</button></p>
+                    }
+                </form>
+            }
+            {currentStep === 3 && 
+                <form className='md:w-[500px] w-full px-2'  onSubmit={submitForm}>
+                {allLecturers.length > 0 ?
+                    <>
+                    <div className='flex flex-col pt-2 '>
+                        <label className='font-bold'>Which Lecturer are you allocating to?</label>
+                          {allLecturers.map((lecturer, index) => (
+                            <div key={index} className='space-x-1'>
+                                <span className='pr-2'>{index + 1}.</span> 
+                                <input type='radio' id='lecturer' name='lecturer' value={lecturer.id} onChange={()=>setLecturerId(lecturer.id)} placeholder='Which lecturer?' className='border p-2 focus:border-blue-500 rounded-md outline-none' required/> 
+                                <label htmlFor='lecturer'>{lecturer.title} {lecturer.firstName} {lecturer.lastName}</label>
+                            </div>
+                        ))}
+                    </div>
+                    <div className='pt-2 flex items-center justify-between'>
+                        <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' >{isSubmitting ? 'Allocating course..' : 'Allocate course'}</button>
+                        <div className='font-bold'>
+                            <span className='text-2xl'>{currentStep}</span>/
+                            <span >{formSteps}</span>
+                        </div>
+                    </div>
+                    </>
+                        :
+                        <p className='text-red-500 font-bold text-center text-xs'>No Lecturers added yet. Please go back to the dashboard and add a lecturer <button onClick={toggle} className='text-blue-500'>now</button></p>
+                        }
+                </form>
+            }
+        </div>
+    </section>
+  )
+}
+
+- The Table that displays details:
+const Courses = () => {
+    const [isSidebarToggled, setIsSidebarToggled] = useState<boolean>(true)
+    const [isAllocatedFormToggled, setIsAllocatedFormToggled] = useState<boolean>(false)
+    const [allCourses, setAllCourses] = React.useState<any[]>([])
+    const [allLevels, setAllLevels] = React.useState<any[]>([])
+    const [isLoading, setIsLoading] = React.useState<boolean>(false)
+    const getApproriateLevel:any = (id:number)=> {
+        const gottenLevel = allLevels.filter((eachLevel) => eachLevel.id === id)
+        return gottenLevel[0]?.level
+    }
+    
+    React.useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true)
+            const courseResponse = await getCourses()
+            if(courseResponse){
+                setAllCourses(courseResponse.data)
+            }
+            const levelResponse = await getLevels()
+            if(levelResponse){
+                setAllLevels(levelResponse.data)
+            }
+            setIsLoading(false)
+        }
+        fetchData()
+    }, [])
+
+    React.useEffect(()=> {
+        const handleResize = () => {
+            if(window.innerWidth >= 756){
+                setIsSidebarToggled(true)
+            }
+
+        }
+        window.addEventListener('resize', handleResize)
+
+        return () => {
+            window.removeEventListener('resize', handleResize)
+        }
+    },[])
+  return (
+    <section>
+        {isSidebarToggled &&
+        <div className='md:block hidden'>
+            <Sidebar/>
+        </div>
+        }
+        <div className={`${isSidebarToggled ? 'md:pl-80' : ' w-full'}   pt-5 md:px-10 px-2 space-y-2 `}>
+            <div className='flex justify-between items-center'>
+                <div className={`${allCourses.length <= 0 && '!bg-blue-300 cursor-not-allowed'} bg-blue-500 rounded-lg text-white py-2 px-4 w-fit`}>
+                    <button className={``} disabled={allCourses.length <= 0} onClick={()=>setIsAllocatedFormToggled(!isAllocatedFormToggled)}>Allocate Courses</button>
+                </div>
+                <div className='cursor-pointer hidden md:block' onClick={()=>{setIsSidebarToggled(!isSidebarToggled)}}>
+                    <Menu/>
+                </div>
+
+            </div>
+
+            {isLoading ?
+                <div className='flex justify-center items-center'>
+                    <Loader2 size={80} className='animate-spin'/>
+                </div>
+            :
+            <>
+                {allCourses.length > 0 ?
+                    <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Course Title</th>
+                                    <th>Course Code</th>
+                                    <th>Unit</th>
+                                    <th>Level</th>
+                                    <th>Lecturer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allCourses.map((course, index) => (
+                                    <tr key={index}>
+                                        <td>{course.title}</td>
+                                        <td>{course.code}</td>
+                                        <td>{course.unit}</td>
+                                        <td>{getApproriateLevel(course.levelId)}</td>
+                                        <td>{course.lecturer.map((lecturer:any, index:any) => (
+                                            <span key={index} className='flex flex-col'>
+                                                <span>{lecturer.title} {lecturer.firstName} {lecturer.lastName}</span>
+                                            </span>
+                                            
+                                        ))}</td>
+                                    </tr>
+
+                                ))}
+                            </tbody>
+                        </table>
+                        <div className=' ml-auto bg-red-500 rounded-lg text-white py-1 my-2 px-4 w-fit'>
+                            <button className='flex items-center' onClick={()=>window.print()}><Printer size={13} className='mr-1'/> <span>Print</span></button>
+                        </div>
+                    </div>
+                :
+                    <div>
+                        <p>No Courses created yet.</p>
+                    </div>
+                }
+            </>
+            }
+
+        </div>
+
+        {isAllocatedFormToggled && 
+            <div>
+                <AllocatedForm toggle={()=>setIsAllocatedFormToggled(!isAllocatedFormToggled)}/>
+            </div>
+        }
+      
+    </section>
+  )
+}
+

@@ -22,8 +22,6 @@ export async function GET(req:NextRequest) {
 }
 export async function POST(req:Request) {
     const data = await req.json()
-    const {title, code, unit, levelId, lecturer} = data
-    console.log("HEre",title, code, unit, levelId, lecturer)
     const existingCourse = await prisma.course.findFirst({
         where:{
             code: data.code,

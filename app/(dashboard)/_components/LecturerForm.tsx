@@ -69,7 +69,7 @@ const LecturerForm = ({toggle}:Props) => {
                     <label className='font-bold'>Last Name</label>
                     <input type='text' id='lastName' name='lastName' placeholder="What is the Lecturer's  last name?" className='border p-2 focus:border-blue-500 rounded-md outline-none' required/>
                 </div>
-                {allCourses.length > 0 &&
+                {/* {allCourses.length > 0 &&
                     <div className='flex flex-col pt-2 '>
                         <label className='font-bold'>Courses Of Specialization</label>
                         <select className='border p-2 focus:border-blue-500 rounded-md outline-none' name='course' required>
@@ -79,7 +79,7 @@ const LecturerForm = ({toggle}:Props) => {
                             ))}
                         </select>
                     </div>
-                }
+                } */}
                 <div className='pt-2'>
                     <button type='submit' className='bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-2 rounded-md text-white' disabled={isSubmitting}>{isSubmitting ? 'Creating lecturer...' : 'Create new lecturer'}</button>
                 </div>

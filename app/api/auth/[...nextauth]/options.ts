@@ -25,13 +25,13 @@ export const options:NextAuthOptions = {
 
                 const user = await prisma.user.findUnique({
                     where:{
-                        username: credentials.username
+                        username: credentials.username.trim()
                     }
                 })
 
                 if(!user) throw new Error("User not found")
 
-                const isCorrectPassword = await bcrypt.compare(credentials.password, user.password)
+                const isCorrectPassword = await bcrypt.compare(credentials.password.trim(), user.password)
 
                 if (!isCorrectPassword) throw new Error("Wrong password")
 
